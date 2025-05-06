@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Garnier Product Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            width: 100%;
+            max-width: 1200px;
+            justify-content: center;
+        }
+
+        .product-card {
+            position: relative;
+            width: 270px;
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .product-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+        }
+
+        .play-button::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-top: 12px solid transparent;
+            border-left: 20px solid #333;
+            border-bottom: 12px solid transparent;
+            margin-left: 5px;
+        }
+
+        .zoom-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            display: none;
+        }
+
+        .product-card:hover .zoom-button {
+            display: block;
+        }
+
+        .product-card:hover .play-button {
+            display: none;
+        }
+
+        .product-text {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            font-size: 28px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+            white-space: pre-line;
+        }
+
+        .product-label {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff6b9a;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            max-width: 80%;
+            z-index: 3;
+            white-space: pre-line;
+        }
+
+        .garnier-logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            background-color: #8bc34a;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            z-index: 3;
+        }
+
+        /* Story Modal Styles */
+        .story-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .story-content {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            background-color: #000;
+            border-radius: 10px;
+        }
+
+        .story-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .story-top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 3;
+        }
+
+        .story-hashtag {
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .story-logo {
+            width: 30px;
+            height: 30px;
+            background-color: #8bc34a;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .story-nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 3;
+        }
+
+        .story-nav-left {
+            left: 10px;
+        }
+
+        .story-nav-right {
+            right: 10px;
+        }
+
+        .story-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 3;
+        }
+
+        .story-control-button {
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .story-progress-container {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            padding: 0 15px;
+            z-index: 3;
+        }
+
+        .story-progress-bar {
+            height: 3px;
+            flex-grow: 1;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .story-progress-bar.active {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .story-progress-bar.completed {
+            background-color: white;
+        }
+
+        .story-content-overlay {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 3;
+        }
+
+        .story-title {
+            color: white;
+            font-weight: bold;
+            font-size: 36px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .story-number {
+            font-size: 72px;
+            line-height: 1;
+        }
+
+        .story-title-text {
+            font-size: 36px;
+            text-transform: uppercase;
+        }
+
+        /* Improved Mobile Responsiveness with Horizontal Scroll */
+        @media (max-width: 1200px) {
+            .container {
+                width: 100%;
+                padding: 0;
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+                gap: 15px;
+                padding: 10px 0;
+                scrollbar-width: none; /* Firefox */
+                -ms-overflow-style: none; /* IE and Edge */
+            }
+            
+            .container::-webkit-scrollbar {
+                display: none; /* Chrome, Safari, Opera */
+            }
+            
+            .product-card {
+                flex: 0 0 auto;
+                width: 250px;
+                height: 450px;
+                margin: 0;
+                scroll-snap-align: start;
+                border-radius: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+            }
+            
+            .container {
+                width: 100%;
+                padding: 10px 0;
+            }
+            
+            .product-card {
+                width: 250px;
+                height: 450px;
+            }
+
+            .story-content {
+                max-width: 90%;
+                height: 80%;
+                max-height: 80vh;
+                border-radius: 15px;
+            }
+            
+            .story-nav-button {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .story-control-button {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .story-title {
+                font-size: 30px;
+            }
+            
+            .story-number {
+                font-size: 60px;
+            }
+            
+            .story-title-text {
+                font-size: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+                width: 100vw;
+            }
+            
+            .container {
+                width: 100%;
+                padding: 10px 0;
+            }
+            
+            .product-card {
+                width: 220px;
+                height: 400px;
+                margin: 0;
+            }
+            
+            .play-button, .zoom-button {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .product-text {
+                font-size: 24px;
+                bottom: 30px;
+            }
+            
+            .product-label {
+                font-size: 14px;
+                top: 80px;
+            }
+            
+            .story-content {
+                max-width: 85%;
+                height: 75%;
+                max-height: 75vh;
+                border-radius: 15px;
+            }
+            
+            .story-nav-button {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .story-control-button {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .story-title {
+                font-size: 24px;
+            }
+            
+            .story-number {
+                font-size: 48px;
+            }
+            
+            .story-title-text {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="product-container">
+        <!-- Product cards will be generated here by JavaScript -->
+    </div>
+
+    <div class="story-modal" id="story-modal">
+        <div class="story-content">
+            <!-- Video -->
+            <video id="story-video" class="story-video" muted autoplay playsinline loop>
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+
+            <!-- Close button -->
+            <div class="close-button" id="close-story">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+
+            <!-- Top bar with hashtag and logo -->
+            <div class="story-top-bar">
+                <div class="story-hashtag" id="story-hashtag">#DareToGoRed</div>
+                <!-- <div class="story-logo">G</div> -->
+            </div>
+
+            <!-- Navigation buttons -->
+            <button class="story-nav-button story-nav-left" id="prev-story">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+            <button class="story-nav-button story-nav-right" id="next-story">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18L15 12L9 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+
+            <!-- Controls -->
+            <div class="story-controls">
+                <button class="story-control-button" id="toggle-pause">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="pause-icon">
+                        <path d="M10 4H6V20H10V4Z" fill="white" />
+                        <path d="M18 4H14V20H18V4Z" fill="white" />
+                    </svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="play-icon" style="display: none;">
+                        <path d="M6 4L18 12L6 20V4Z" fill="white" />
+                    </svg>
+                </button>
+                <button class="story-control-button" id="toggle-mute">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="mute-icon">
+                        <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M23 9L17 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M17 9L23 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="volume-icon" style="display: none;">
+                        <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07M15.54 8.46C16.4774 9.39764 17.004 10.6692 17.004 11.995C17.004 13.3208 16.4774 14.5924 15.54 15.53" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Progress indicators -->
+            <div class="story-progress-container" id="story-progress">
+                <!-- Progress bars will be generated by JavaScript -->
+            </div>
+
+            <!-- Content overlay -->
+            <div class="story-content-overlay">
+                <div class="story-title" id="story-title">
+                    <!-- Content will be set by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Product data
+            const products = [
+                {
+                    id: 'uv-rays',
+                    title: 'UV RAYS',
+                    image: 'https://images.unsplash.com/photo-1535295972055-1c762f4483e5?q=80&w=500&auto=format&fit=crop',
+                    videoUrl: 'https://stories.join-stories.com/garnier-india/ddc8c3b4-2d59-4a59-9987-ffb35dfba57c/story.mp4',
+                    label: null,
+                    hasLogo: false,
+                    hashtag: '#UVRays'
+                },
+                {
+                    id: 'red-hair',
+                    title: 'DARE TO\nGO RED',
+                    image: 'https://images.unsplash.com/photo-1595178302776-fa04e6d45216?q=80&w=500&auto=format&fit=crop',
+                    videoUrl: 'https://stories.join-stories.com/garnier-india/ddc8c3b4-2d59-4a59-9987-ffb35dfba57c/story.mp4',
+                    label: null,
+                    hasLogo: true,
+                    hashtag: '#DareToGoRed'
+                },
+                {
+                    id: 'micellar',
+                    title: null,
+                    image: 'https://images.unsplash.com/photo-1624958723474-564d8770aeea?q=80&w=500&auto=format&fit=crop',
+                    videoUrl: 'https://stories.join-stories.com/garnier-india/ddc8c3b4-2d59-4a59-9987-ffb35dfba57c/story.mp4',
+                    label: 'GARNIER MICELLAR\nCLEANSING WATER',
+                    hasLogo: false,
+                    hashtag: '#GarnierMicellar'
+                },
+                {
+                    id: 'men',
+                    title: 'CHARGE',
+                    image: '', // Empty image URL to test optional image
+                    videoUrl: 'https://stories.join-stories.com/garnier-india/ddc8c3b4-2d59-4a59-9987-ffb35dfba57c/story.mp4',
+                    label: null,
+                    hasLogo: false,
+                    hashtag: '#GarnierMen'
+                }
+            ];
+
+            // Variables for story modal
+            let currentStoryIndex = 0;
+            let isPaused = false;
+            let isMuted = true;
+
+            // Generate product cards
+            const productContainer = document.getElementById('product-container');
+            const videoElements = [];
+
+            products.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.setAttribute('data-index', index);
+
+                // Video container
+                const videoContainer = document.createElement('div');
+                videoContainer.className = 'video-container';
+
+                // Video element
+                const video = document.createElement('video');
+                video.className = 'product-video';
+                video.muted = true;
+                video.loop = true;
+                video.playsInline = true;
+                
+                const source = document.createElement('source');
+                source.src = product.videoUrl;
+                source.type = 'video/mp4';
+                
+                video.appendChild(source);
+                video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
+                videoElements.push(video);
+
+                // Image element (only if image URL exists)
+                if (product.image && product.image.trim() !== '') {
+                    const img = document.createElement('img');
+                    img.className = 'product-image';
+                    img.src = product.image;
+                    img.alt = product.title || product.label || product.id;
+                    videoContainer.appendChild(img);
+                }
+
+                videoContainer.appendChild(video);
+                card.appendChild(videoContainer);
+
+                // Play button
+                const playButton = document.createElement('div');
+                playButton.className = 'play-button';
+                card.appendChild(playButton);
+
+                // Zoom button
+                const zoomButton = document.createElement('div');
+                zoomButton.className = 'zoom-button';
+                zoomButton.innerHTML = `
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="12" fill="white" fill-opacity="0.7" />
+                        <path d="M8 11L11 8M11 8H8M11 8V11" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M16 13L13 16M13 16H16M13 16V13" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                `;
+                card.appendChild(zoomButton);
+
+                // Garnier logo if needed
+                if (product.hasLogo) {
+                    const logo = document.createElement('div');
+                    logo.className = 'garnier-logo';
+                    logo.textContent = 'G';
+                    card.appendChild(logo);
+                }
+
+                // Product title if available
+                if (product.title) {
+                    const title = document.createElement('div');
+                    title.className = 'product-text';
+                    title.textContent = product.title;
+                    card.appendChild(title);
+                }
+
+                // Product label if available
+                if (product.label) {
+                    const label = document.createElement('div');
+                    label.className = 'product-label';
+                    label.textContent = product.label;
+                    card.appendChild(label);
+                }
+
+                // Add event listeners
+                card.addEventListener('mouseenter', () => {
+                    video.play().catch(error => console.log("Autoplay prevented:", error));
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    video.pause();
+                });
+
+                card.addEventListener('click', () => {
+                    openStoryModal(index);
+                });
+
+                // Add touch event listeners for mobile
+                card.addEventListener('touchstart', () => {
+                    video.play().catch(error => console.log("Autoplay prevented:", error));
+                });
+
+                card.addEventListener('touchend', () => {
+                    video.pause();
+                    // Small delay before opening modal to prevent accidental clicks
+                    setTimeout(() => {
+                        if (!card.touchMoved) {
+                            openStoryModal(index);
+                        }
+                    }, 100);
+                });
+
+                card.addEventListener('touchmove', () => {
+                    card.touchMoved = true;
+                });
+
+                card.addEventListener('touchcancel', () => {
+                    card.touchMoved = false;
+                    video.pause();
+                });
+
+                productContainer.appendChild(card);
+            });
+
+            // Story modal elements
+            const storyModal = document.getElementById('story-modal');
+            const storyVideo = document.getElementById('story-video');
+            const storyHashtag = document.getElementById('story-hashtag');
+            const storyTitle = document.getElementById('story-title');
+            const storyProgress = document.getElementById('story-progress');
+            const prevStoryBtn = document.getElementById('prev-story');
+            const nextStoryBtn = document.getElementById('next-story');
+            const togglePauseBtn = document.getElementById('toggle-pause');
+            const toggleMuteBtn = document.getElementById('toggle-mute');
+            const pauseIcon = document.getElementById('pause-icon');
+            const playIcon = document.getElementById('play-icon');
+            const muteIcon = document.getElementById('mute-icon');
+            const volumeIcon = document.getElementById('volume-icon');
+            const closeStoryBtn = document.getElementById('close-story');
+
+            // Create progress bars
+            function createProgressBars() {
+                storyProgress.innerHTML = '';
+                products.forEach((_, index) => {
+                    const progressBar = document.createElement('div');
+                    progressBar.className = `story-progress-bar ${index === currentStoryIndex ? 'active' : ''} ${index < currentStoryIndex ? 'completed' : ''}`;
+                    storyProgress.appendChild(progressBar);
+                });
+            }
+
+            // Update story content
+            function updateStoryContent() {
+                const product = products[currentStoryIndex];
+                
+                // Update video source and play it
+                const videoSource = storyVideo.querySelector('source');
+                videoSource.src = product.videoUrl;
+                storyVideo.load();
+                
+                if (!isPaused) {
+                    storyVideo.play().catch(error => console.log("Autoplay prevented:", error));
+                }
+                
+                // Update hashtag
+                storyHashtag.textContent = product.hashtag;
+                
+                // Update title content
+                if (product.title) {
+                    if (currentStoryIndex === 1) { // Special case for the second product (index 1)
+                        storyTitle.innerHTML = `
+                            <div class="story-number">3</div>
+                            <div class="story-title-text">NATURAL OILS</div>
+                        `;
+                    } else {
+                        storyTitle.textContent = product.title;
+                    }
+                } else if (product.label) {
+                    storyTitle.textContent = product.label;
+                } else {
+                    storyTitle.textContent = '';
+                }
+                
+                // Update progress bars
+                createProgressBars();
+            }
+
+            // Open story modal
+            function openStoryModal(index) {
+                currentStoryIndex = index;
+                updateStoryContent();
+                storyModal.style.display = 'flex';
+                
+                // Add keyboard event listeners
+                document.addEventListener('keydown', handleKeyDown);
+                
+                // Add touch event listeners for mobile swipe
+                let touchStartX = 0;
+                let touchEndX = 0;
+                
+                function handleTouchStart(e) {
+                    touchStartX = e.changedTouches[0].screenX;
+                }
+                
+                function handleTouchEnd(e) {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                }
+                
+                function handleSwipe() {
+                    if (touchEndX < touchStartX - 50) {
+                        // Swipe left
+                        goToNextStory();
+                    } else if (touchEndX > touchStartX + 50) {
+                        // Swipe right
+                        goToPreviousStory();
+                    }
+                }
+                
+                storyModal.addEventListener('touchstart', handleTouchStart);
+                storyModal.addEventListener('touchend', handleTouchEnd);
+                
+                // Store the event listeners to remove them later
+                storyModal.touchStartListener = handleTouchStart;
+                storyModal.touchEndListener = handleTouchEnd;
+            }
+
+            // Close story modal
+            function closeStoryModal() {
+                storyModal.style.display = 'none';
+                storyVideo.pause();
+                
+                // Remove keyboard event listeners
+                document.removeEventListener('keydown', handleKeyDown);
+                
+                // Remove touch event listeners
+                if (storyModal.touchStartListener) {
+                    storyModal.removeEventListener('touchstart', storyModal.touchStartListener);
+                }
+                
+                if (storyModal.touchEndListener) {
+                    storyModal.removeEventListener('touchend', storyModal.touchEndListener);
+                }
+            }
+
+            // Go to next story
+            function goToNextStory() {
+                if (currentStoryIndex < products.length - 1) {
+                    currentStoryIndex++;
+                    updateStoryContent();
+                } else {
+                    closeStoryModal();
+                }
+            }
+
+            // Go to previous story
+            function goToPreviousStory() {
+                if (currentStoryIndex > 0) {
+                    currentStoryIndex--;
+                    updateStoryContent();
+                }
+            }
+
+            // Toggle pause/play
+            function togglePause() {
+                isPaused = !isPaused;
+                if (isPaused) {
+                    storyVideo.pause();
+                    pauseIcon.style.display = 'none';
+                    playIcon.style.display = 'block';
+                } else {
+                    storyVideo.play();
+                    pauseIcon.style.display = 'block';
+                    playIcon.style.display = 'none';
+                }
+            }
+
+            // Toggle mute/unmute
+            function toggleMute() {
+                isMuted = !isMuted;
+                storyVideo.muted = isMuted;
+                if (isMuted) {
+                    muteIcon.style.display = 'block';
+                    volumeIcon.style.display = 'none';
+                } else {
+                    muteIcon.style.display = 'none';
+                    volumeIcon.style.display = 'block';
+                }
+            }
+
+            // Handle keyboard events
+            function handleKeyDown(e) {
+                if (e.key === 'ArrowLeft') goToPreviousStory();
+                if (e.key === 'ArrowRight') goToNextStory();
+                if (e.key === 'Escape') closeStoryModal();
+                if (e.key === ' ') togglePause();
+            }
+
+            // Event listeners for story modal
+            storyModal.addEventListener('click', function(e) {
+                if (e.target === storyModal) {
+                    closeStoryModal();
+                }
+            });
+
+            prevStoryBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                goToPreviousStory();
+            });
+
+            nextStoryBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                goToNextStory();
+            });
+
+            togglePauseBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                togglePause();
+            });
+
+            toggleMuteBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleMute();
+            });
+
+            // Add close button event listener
+            closeStoryBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeStoryModal();
+            });
+
+            // Handle video ended event
+            storyVideo.addEventListener('ended', function() {
+                // If video ends and is not set to loop, go to next story
+                if (!storyVideo.loop) {
+                    goToNextStory();
+                }
+            });
+
+            // Check for mobile device
+            function isMobileDevice() {
+                return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+            }
+
+            // Apply mobile-specific adjustments
+            if (isMobileDevice()) {
+                // Adjust any mobile-specific behaviors here
+                document.body.classList.add('mobile-device');
+            }
+        });
+    </script>
+</body>
+</html>
