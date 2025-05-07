@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html id="html-container" lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -23,6 +24,10 @@
             overflow-x: hidden;
         }
 
+        #body-container {
+            padding-top: 0px;
+        }
+
         .testimonials-heading {
             margin: auto;
             font-family: inherit;
@@ -34,6 +39,10 @@
             align-self: flex-start;
             max-width: 1200px;
             width: 100%;
+        }
+
+        .testimonials-heading h2 {
+            margin: 0;
         }
 
         .container-wrapper {
@@ -50,12 +59,15 @@
             overflow-x: auto;
             justify-content: flex-start;
             padding: 10px 0;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
         }
 
         .container::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
+            display: none;
+            /* Chrome, Safari, Opera */
         }
 
         /* Navigation arrows for when there are more than 4 cards */
@@ -228,8 +240,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            background-color: transparent;
+            background-color: rgba(0, 0, 0, 0.700);
+            /* background-color: transparent; */
             z-index: 100;
             display: none;
             justify-content: center;
@@ -239,9 +251,9 @@
         .story-content {
             position: relative;
             width: 100%;
-            max-width: 420px;
-            height: 100%;
-            max-height: 90vh;
+            max-width: 400px;
+            /* min-height: 100%; */
+            max-height: 680px;
             overflow: hidden;
             background-color: #000;
             border-radius: 10px;
@@ -413,14 +425,17 @@
                 scroll-snap-type: x mandatory;
                 gap: 15px;
                 padding: 10px 0;
-                scrollbar-width: none; /* Firefox */
-                -ms-overflow-style: none; /* IE and Edge */
+                scrollbar-width: none;
+                /* Firefox */
+                -ms-overflow-style: none;
+                /* IE and Edge */
             }
-            
+
             .container::-webkit-scrollbar {
-                display: none; /* Chrome, Safari, Opera */
+                display: none;
+                /* Chrome, Safari, Opera */
             }
-            
+
             .product-card {
                 flex: 0 0 auto;
                 width: 250px;
@@ -440,12 +455,12 @@
                 padding: 10px;
                 align-items: flex-start;
             }
-            
+
             .container {
                 width: 100%;
                 padding: 10px 0;
             }
-            
+
             .product-card {
                 width: 250px;
                 height: 450px;
@@ -457,25 +472,25 @@
                 max-height: 80vh;
                 border-radius: 15px;
             }
-            
+
             .story-nav-button {
                 width: 36px;
                 height: 36px;
             }
-            
+
             .story-control-button {
                 width: 36px;
                 height: 36px;
             }
-            
+
             .story-title {
                 font-size: 30px;
             }
-            
+
             .story-number {
                 font-size: 60px;
             }
-            
+
             .story-title-text {
                 font-size: 30px;
             }
@@ -504,58 +519,59 @@
                 padding: 5px;
                 width: 100vw;
             }
-            
+
             .container {
                 width: 100%;
                 padding: 10px 0;
             }
-            
+
             .product-card {
-                width: 220px;
-                height: 400px;
+                width: 190px;
+                height: 325px;
                 margin: 0;
             }
-            
-            .play-button, .zoom-button {
+
+            .play-button,
+            .zoom-button {
                 width: 50px;
                 height: 50px;
             }
-            
+
             .product-text {
                 font-size: 24px;
                 bottom: 30px;
             }
-            
+
             .product-label {
                 font-size: 14px;
                 top: 80px;
             }
-            
+
             .story-content {
                 max-width: 85%;
                 height: 75%;
                 max-height: 75vh;
                 border-radius: 15px;
             }
-            
+
             .story-nav-button {
                 width: 32px;
                 height: 32px;
             }
-            
+
             .story-control-button {
                 width: 32px;
                 height: 32px;
             }
-            
+
             .story-title {
                 font-size: 24px;
             }
-            
+
             .story-number {
                 font-size: 48px;
             }
-            
+
             .story-title-text {
                 font-size: 24px;
             }
@@ -580,22 +596,25 @@
         }
     </style>
 </head>
+
 <body id="body-container">
     <h2 class="testimonials-heading">Testimonials</h2>
-    
+
     <div class="container-wrapper">
         <!-- Navigation arrows - will be shown/hidden via JavaScript -->
         <button class="nav-arrow left" id="scroll-left" style="display: none;">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
             </svg>
         </button>
         <button class="nav-arrow right" id="scroll-right" style="display: none;">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 18L15 12L9 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M9 18L15 12L9 6" stroke="#333" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
             </svg>
         </button>
-        
+
         <div class="container" id="product-container">
             <!-- Product cards will be generated here by JavaScript -->
         </div>
@@ -612,8 +631,10 @@
             <!-- Close button -->
             <div class="close-button" id="close-story">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 6L6 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M18 6L6 18" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
             </div>
 
@@ -626,35 +647,47 @@
             <!-- Navigation buttons -->
             <button class="story-nav-button story-nav-left" id="prev-story">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
             </button>
             <button class="story-nav-button story-nav-right" id="next-story">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 18L15 12L9 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M9 18L15 12L9 6" stroke="white" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
             </button>
 
             <!-- Controls -->
             <div class="story-controls">
                 <button class="story-control-button" id="toggle-pause">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="pause-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        id="pause-icon">
                         <path d="M10 4H6V20H10V4Z" fill="white" />
                         <path d="M18 4H14V20H18V4Z" fill="white" />
                     </svg>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="play-icon" style="display: none;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        id="play-icon" style="display: none;">
                         <path d="M6 4L18 12L6 20V4Z" fill="white" />
                     </svg>
                 </button>
                 <button class="story-control-button" id="toggle-mute">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="mute-icon">
-                        <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M23 9L17 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M17 9L23 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        id="mute-icon">
+                        <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="white" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M23 9L17 15" stroke="white" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M17 9L23 15" stroke="white" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
                     </svg>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="volume-icon" style="display: none;">
-                        <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07M15.54 8.46C16.4774 9.39764 17.004 10.6692 17.004 11.995C17.004 13.3208 16.4774 14.5924 15.54 15.53" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        id="volume-icon" style="display: none;">
+                        <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="white" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path
+                            d="M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07M15.54 8.46C16.4774 9.39764 17.004 10.6692 17.004 11.995C17.004 13.3208 16.4774 14.5924 15.54 15.53"
+                            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </button>
             </div>
@@ -674,7 +707,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Product data
             const products = [
                 {
@@ -739,11 +772,11 @@
                 video.muted = true;
                 video.loop = true;
                 video.playsInline = true;
-                
+
                 const source = document.createElement('source');
                 source.src = product.videoUrl;
                 source.type = 'video/mp4';
-                
+
                 video.appendChild(source);
                 video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
                 videoElements.push(video);
@@ -845,16 +878,16 @@
             // Check if we need to show navigation arrows (more than 4 products)
             const scrollLeftBtn = document.getElementById('scroll-left');
             const scrollRightBtn = document.getElementById('scroll-right');
-            
+
             if (products.length > 4) {
                 scrollLeftBtn.style.display = 'flex';
                 scrollRightBtn.style.display = 'flex';
-                
+
                 // Add event listeners for scroll buttons
                 scrollLeftBtn.addEventListener('click', () => {
                     productContainer.scrollBy({ left: -300, behavior: 'smooth' });
                 });
-                
+
                 scrollRightBtn.addEventListener('click', () => {
                     productContainer.scrollBy({ left: 300, behavior: 'smooth' });
                 });
@@ -876,6 +909,27 @@
             const volumeIcon = document.getElementById('volume-icon');
             const closeStoryBtn = document.getElementById('close-story');
 
+
+            const mainContainer = document.querySelector("#main-testimonials-container")
+
+            function addStyles() {
+                if (mainContainer) {
+                    mainContainer.style.position = "fixed";
+                    mainContainer.style.top = "0";
+                    mainContainer.style.left = "0";
+                    mainContainer.style.zIndex = "99";
+                }
+            }
+
+            function removeStyles() {
+                if (mainContainer) {
+                    mainContainer.style.position = "";
+                    mainContainer.style.top = "";
+                    mainContainer.style.left = "";
+                    mainContainer.style.zIndex = "";
+                }
+            }
+
             // Create progress bars
             function createProgressBars() {
                 storyProgress.innerHTML = '';
@@ -889,19 +943,19 @@
             // Update story content
             function updateStoryContent() {
                 const product = products[currentStoryIndex];
-                
+
                 // Update video source and play it
                 const videoSource = storyVideo.querySelector('source');
                 videoSource.src = product.videoUrl;
                 storyVideo.load();
-                
+
                 if (!isPaused) {
                     storyVideo.play().catch(error => console.log("Autoplay prevented:", error));
                 }
-                
+
                 // Update hashtag
                 storyHashtag.textContent = product.hashtag;
-                
+
                 // Update title content
                 if (product.title) {
                     if (currentStoryIndex === 1) { // Special case for the second product (index 1)
@@ -917,33 +971,34 @@
                 } else {
                     storyTitle.textContent = '';
                 }
-                
+
                 // Update progress bars
                 createProgressBars();
             }
 
             // Open story modal
             function openStoryModal(index) {
+                addStyles()
                 currentStoryIndex = index;
                 updateStoryContent();
                 storyModal.style.display = 'flex';
-                
+
                 // Add keyboard event listeners
                 document.addEventListener('keydown', handleKeyDown);
-                
+
                 // Add touch event listeners for mobile swipe
                 let touchStartX = 0;
                 let touchEndX = 0;
-                
+
                 function handleTouchStart(e) {
                     touchStartX = e.changedTouches[0].screenX;
                 }
-                
+
                 function handleTouchEnd(e) {
                     touchEndX = e.changedTouches[0].screenX;
                     handleSwipe();
                 }
-                
+
                 function handleSwipe() {
                     if (touchEndX < touchStartX - 50) {
                         // Swipe left
@@ -953,10 +1008,10 @@
                         goToPreviousStory();
                     }
                 }
-                
+
                 storyModal.addEventListener('touchstart', handleTouchStart);
                 storyModal.addEventListener('touchend', handleTouchEnd);
-                
+
                 // Store the event listeners to remove them later
                 storyModal.touchStartListener = handleTouchStart;
                 storyModal.touchEndListener = handleTouchEnd;
@@ -964,17 +1019,18 @@
 
             // Close story modal
             function closeStoryModal() {
+                removeStyles()
                 storyModal.style.display = 'none';
                 storyVideo.pause();
-                
+
                 // Remove keyboard event listeners
                 document.removeEventListener('keydown', handleKeyDown);
-                
+
                 // Remove touch event listeners
                 if (storyModal.touchStartListener) {
                     storyModal.removeEventListener('touchstart', storyModal.touchStartListener);
                 }
-                
+
                 if (storyModal.touchEndListener) {
                     storyModal.removeEventListener('touchend', storyModal.touchEndListener);
                 }
@@ -1034,40 +1090,40 @@
             }
 
             // Event listeners for story modal
-            storyModal.addEventListener('click', function(e) {
+            storyModal.addEventListener('click', function (e) {
                 if (e.target === storyModal) {
                     closeStoryModal();
                 }
             });
 
-            prevStoryBtn.addEventListener('click', function(e) {
+            prevStoryBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 goToPreviousStory();
             });
 
-            nextStoryBtn.addEventListener('click', function(e) {
+            nextStoryBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 goToNextStory();
             });
 
-            togglePauseBtn.addEventListener('click', function(e) {
+            togglePauseBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 togglePause();
             });
 
-            toggleMuteBtn.addEventListener('click', function(e) {
+            toggleMuteBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 toggleMute();
             });
 
             // Add close button event listener
-            closeStoryBtn.addEventListener('click', function(e) {
+            closeStoryBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 closeStoryModal();
             });
 
             // Handle video ended event
-            storyVideo.addEventListener('ended', function() {
+            storyVideo.addEventListener('ended', function () {
                 // If video ends and is not set to loop, go to next story
                 if (!storyVideo.loop) {
                     goToNextStory();
@@ -1087,4 +1143,5 @@
         });
     </script>
 </body>
+
 </html>
