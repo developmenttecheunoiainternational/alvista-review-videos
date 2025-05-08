@@ -63,6 +63,8 @@
             /* Firefox */
             -ms-overflow-style: none;
             /* IE and Edge */
+            /* Fix for mouse wheel horizontal scrolling */
+            scroll-behavior: smooth;
         }
 
         .container::-webkit-scrollbar {
@@ -301,7 +303,7 @@
 </head>
 
 <body id="body-container">
-    <!-- <h2 class="testimonials-heading">Testimonials</h2> -->
+    <h2 class="testimonials-heading">Testimonials</h2>
 
     <div class="container-wrapper">
         <!-- Navigation arrows - will be shown/hidden via JavaScript -->
@@ -403,9 +405,13 @@
                 // Video element
                 const video = document.createElement('video');
                 video.className = 'product-video';
-                video.muted = true;
+                // Changed from muted to unmuted
+                video.muted = false;
                 video.loop = true;
                 video.playsInline = true;
+                // Fix for mobile video playback
+                video.setAttribute('playsinline', '');
+                video.setAttribute('webkit-playsinline', '');
 
                 const source = document.createElement('source');
                 source.src = videoUrl;
@@ -446,20 +452,12 @@
                     togglePlayPause(video, playButton, pauseButton);
                 });
 
-                // Add touch event listeners for mobile
-                let touchStartTime = 0;
-                let touchEndTime = 0;
-
-                card.addEventListener('touchstart', () => {
-                    touchStartTime = new Date().getTime();
-                });
-
+                // Fix for mobile touch events - simplified to work better
                 card.addEventListener('touchend', (e) => {
-                    touchEndTime = new Date().getTime();
-                    // If it was a quick tap (less than 300ms), treat it as a click
-                    if (touchEndTime - touchStartTime < 300) {
-                        togglePlayPause(video, playButton, pauseButton);
-                    }
+                    // Prevent default to avoid any browser-specific behaviors
+                    e.preventDefault();
+                    // Simple toggle without timing checks
+                    togglePlayPause(video, playButton, pauseButton);
                 });
 
                 // Show play button when video ends
@@ -514,8 +512,34 @@
                     productContainer.style.overflowX = 'auto';
                 }
             }
+
+            // Improved mouse wheel horizontal scrolling
+            // This is a more robust solution that works across browsers
+            if (productContainer) {
+                productContainer.addEventListener('wheel', function(event) {
+                    // Prevent the default vertical scroll
+                    event.preventDefault();
+                    
+                    // Calculate scroll amount - use deltaY for most browsers
+                    const scrollAmount = event.deltaY || event.deltaX;
+                    
+                    // Apply the scroll to the container
+                    productContainer.scrollLeft += scrollAmount;
+                }, { passive: false });
+            }
+
+            // Add keyboard navigation for accessibility
+            document.addEventListener('keydown', function(e) {
+                if (document.activeElement === document.body) {
+                    if (e.key === 'ArrowLeft') {
+                        productContainer.scrollBy({ left: -100, behavior: 'smooth' });
+                    } else if (e.key === 'ArrowRight') {
+                        productContainer.scrollBy({ left: 100, behavior: 'smooth' });
+                    }
+                }
+            });
         });
     </script>
 </body>
 
-</html>  
+</html>
