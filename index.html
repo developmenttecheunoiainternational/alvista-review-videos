@@ -51,12 +51,13 @@
             gap: 15px;
             width: 100%;
             max-width: 1200px;
-            overflow-x: hidden;
+            overflow-x: auto; /* Changed from hidden to auto to enable scrolling */
             justify-content: flex-start;
             padding: 10px 0;
             scrollbar-width: none;
             -ms-overflow-style: none;
             scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch; /* Improved touch scrolling */
         }
 
         .container::-webkit-scrollbar {
@@ -168,7 +169,7 @@
                 padding: 0;
                 justify-content: flex-start;
                 flex-wrap: nowrap;
-                overflow-x: hidden;
+                overflow-x: auto; /* Changed from hidden to auto */
                 overflow-y: hidden;
                 -webkit-overflow-scrolling: touch;
                 scroll-snap-type: x mandatory;
@@ -203,6 +204,7 @@
                 width: 100%;
                 padding: 10px 0;
                 justify-content: flex-start;
+                overflow-x: auto; /* Ensure scrolling works */
             }
 
             .product-card {
@@ -241,11 +243,13 @@
                 padding: 10px 0;
                 justify-content: flex-start;
                 gap: 8px;
+                overflow-x: auto; /* Ensure scrolling works */
             }
 
             .product-card {
-                width: calc((100% - 8px) / 2); /* Show 2 videos per row with smaller gap */
+                width: calc((100% - 24px) / 2); /* Show 2 videos per row with smaller gap */
                 max-width: none;
+                flex: 0 0 auto; /* Prevent shrinking */
             }
 
             .play-button,
@@ -325,9 +329,15 @@
             let currentlyPlaying = null;
             let fadeOutTimer = null;
             let currentIndex = 0; // Track the current first visible card index
+            let isScrolling = false; // Flag to track if user is scrolling
+            let touchStartX = 0; // Track touch start position
+            let touchMoveX = 0; // Track touch move position
 
             // Function to handle play/pause toggle
             function togglePlayPause(video, playButton, pauseButton) {
+                // If we're scrolling, don't toggle play/pause
+                if (isScrolling) return;
+
                 // Clear any existing fade timer
                 if (fadeOutTimer) {
                     clearTimeout(fadeOutTimer);
@@ -434,15 +444,9 @@
 
                 // Add click event to the entire card
                 card.addEventListener('click', () => {
-                    togglePlayPause(video, playButton, pauseButton);
-                });
-
-                // Fix for mobile touch events - simplified to work better
-                card.addEventListener('touchend', (e) => {
-                    // Prevent default to avoid any browser-specific behaviors
-                    e.preventDefault();
-                    // Simple toggle without timing checks
-                    togglePlayPause(video, playButton, pauseButton);
+                    if (!isScrolling) {
+                        togglePlayPause(video, playButton, pauseButton);
+                    }
                 });
 
                 // Show play button when video ends
@@ -464,14 +468,17 @@
             function scrollToIndex(index) {
                 // Ensure index is within bounds
                 if (index < 0) index = 0;
-                if (index > videoUrls.length - 4) index = videoUrls.length - 4;
+                const maxVisibleCards = getMaxVisibleCards();
+                const maxIndex = videoUrls.length - maxVisibleCards;
+                
+                if (index > maxIndex) index = maxIndex;
                 
                 // Get all cards
                 const cards = document.querySelectorAll('.product-card');
                 if (cards.length > 0) {
                     // Calculate position to scroll to
                     const cardWidth = cards[0].offsetWidth;
-                    const gap = 15; // Gap between cards
+                    const gap = parseInt(window.getComputedStyle(productContainer).gap) || 15; // Get gap from CSS
                     const scrollPosition = index * (cardWidth + gap);
                     
                     // Scroll to position
@@ -488,12 +495,22 @@
                 }
             }
 
+            // Function to determine how many cards are visible based on screen width
+            function getMaxVisibleCards() {
+                if (window.innerWidth <= 480) {
+                    return 2; // Mobile: 2 cards visible
+                } else if (window.innerWidth <= 768) {
+                    return 2; // Tablet: 2 cards visible
+                } else {
+                    return 4; // Desktop: 4 cards visible
+                }
+            }
+
             // Set up navigation arrows
             const scrollLeftBtn = document.getElementById('scroll-left');
             const scrollRightBtn = document.getElementById('scroll-right');
             
             // Add event listeners for scroll buttons - scroll by exactly one card
-            // FIXED: Added stopPropagation to prevent video play/pause
             scrollLeftBtn.addEventListener('click', (e) => {
                 e.stopPropagation(); // Stop event from bubbling up
                 scrollToIndex(currentIndex - 1);
@@ -534,7 +551,8 @@
                 scrollLeftBtn.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
                 
                 // Show/hide right button based on scroll position
-                const maxIndex = videoUrls.length - 4; // Assuming 4 cards visible at once
+                const maxVisibleCards = getMaxVisibleCards();
+                const maxIndex = videoUrls.length - maxVisibleCards;
                 scrollRightBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
                 scrollRightBtn.style.pointerEvents = currentIndex >= maxIndex ? 'none' : 'auto';
             }
@@ -543,11 +561,49 @@
             updateButtonVisibility();
             
             // IMPORTANT: Prevent navigation buttons from triggering video play/pause
-            // This ensures the buttons are completely isolated from the video functionality
             scrollLeftBtn.addEventListener('mousedown', (e) => e.stopPropagation());
             scrollRightBtn.addEventListener('mousedown', (e) => e.stopPropagation());
             scrollLeftBtn.addEventListener('touchstart', (e) => e.stopPropagation());
             scrollRightBtn.addEventListener('touchstart', (e) => e.stopPropagation());
+
+            // Improved touch handling for mobile scrolling
+            productContainer.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                touchMoveX = touchStartX;
+                isScrolling = false;
+            }, { passive: true });
+
+            productContainer.addEventListener('touchmove', (e) => {
+                touchMoveX = e.touches[0].clientX;
+                // If moved more than 10px, consider it a scroll
+                if (Math.abs(touchMoveX - touchStartX) > 10) {
+                    isScrolling = true;
+                }
+            }, { passive: true });
+
+            productContainer.addEventListener('touchend', (e) => {
+                // Wait a bit before resetting the scrolling flag
+                setTimeout(() => {
+                    isScrolling = false;
+                }, 100);
+            }, { passive: true });
+
+            // Handle window resize to update button visibility
+            window.addEventListener('resize', () => {
+                updateButtonVisibility();
+            });
+
+            // Update scroll position when container is scrolled manually
+            productContainer.addEventListener('scroll', () => {
+                // Calculate current index based on scroll position
+                const cards = document.querySelectorAll('.product-card');
+                if (cards.length > 0) {
+                    const cardWidth = cards[0].offsetWidth;
+                    const gap = parseInt(window.getComputedStyle(productContainer).gap) || 15;
+                    currentIndex = Math.round(productContainer.scrollLeft / (cardWidth + gap));
+                    updateButtonVisibility();
+                }
+            });
         });
     </script>
 </body>
