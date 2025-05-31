@@ -111,6 +111,22 @@
             position: relative;
         }
 
+        /* Thumbnail styles */
+        .thumbnail-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            display: block;
+        }
+
+        .thumbnail-image.hidden {
+            display: none;
+        }
+
         .product-video {
             width: 100%;
             height: 100%;
@@ -118,6 +134,12 @@
             position: absolute;
             top: 0;
             left: 0;
+            z-index: 1;
+            display: none;
+        }
+
+        .product-video.visible {
+            display: block;
             z-index: 2;
         }
 
@@ -314,14 +336,32 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Simplified product data - just video URLs
-            const videoUrls = [
-                'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/Alvista%20Deepak%20Sharma%20Reel.mp4',
-                'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/Alvista%20Pradeep%20Kabra%20Reel.mp4',
-                'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/Gautam%20Rode%20Ji%20Final%20Short%20(2).mp4',
-                'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/Sharad%20Ji%202%20Short%20Final%20(2).mp4',
-                'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/Sharad%20Malotra%20Final%20Short%201.mp4',
-                'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/new%20Alvista%20Yukti%20Kapoor%20Reel.mp4 '
+            // Video URLs and corresponding thumbnail images
+            const videoData = [
+                {
+                    videoUrl: 'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/Alvista%20Deepak%20Sharma%20Reel.mp4',
+                    thumbnailUrl: 'images/thumb1.png' // Update with your actual thumbnail path
+                },
+                {
+                    videoUrl: 'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/Alvista%20Pradeep%20Kabra%20Reel.mp4',
+                    thumbnailUrl: 'images/thumb2.png' // Update with your actual thumbnail path
+                },
+                {
+                    videoUrl: 'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/Gautam%20Rode%20Ji%20Final%20Short%20(2).mp4',
+                    thumbnailUrl: 'images/thumb3.png' // Update with your actual thumbnail path
+                },
+                {
+                    videoUrl: 'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/Sharad%20Ji%202%20Short%20Final%20(2).mp4',
+                    thumbnailUrl: 'images/thumb4.png' // Update with your actual thumbnail path
+                },
+                {
+                    videoUrl: 'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/Sharad%20Malotra%20Final%20Short%201.mp4',
+                    thumbnailUrl: 'images/thumb5.png' // Update with your actual thumbnail path
+                },
+                {
+                    videoUrl: 'https://storage.googleapis.com/alvista-videos/uploads/home_page_video/new%20Alvista%20Yukti%20Kapoor%20Reel.mp4',
+                    thumbnailUrl: 'images/thumb6.png' // Update with your actual thumbnail path
+                }
             ];
 
             // Generate product cards
@@ -334,8 +374,39 @@
             let touchStartX = 0; // Track touch start position
             let touchMoveX = 0; // Track touch move position
 
+            // Function to show thumbnail and hide video
+            function showThumbnail(card) {
+                const thumbnail = card.querySelector('.thumbnail-image');
+                const video = card.querySelector('.product-video');
+                const playButton = card.querySelector('.play-button');
+                const pauseButton = card.querySelector('.pause-button');
+
+                if (thumbnail) thumbnail.classList.remove('hidden');
+                if (video) {
+                    video.classList.remove('visible');
+                    video.pause();
+                }
+                if (playButton) {
+                    playButton.style.display = 'flex';
+                    playButton.classList.remove('fade-out');
+                }
+                if (pauseButton) {
+                    pauseButton.style.display = 'none';
+                    pauseButton.classList.remove('fade-out');
+                }
+            }
+
+            // Function to hide thumbnail and show video
+            function showVideo(card) {
+                const thumbnail = card.querySelector('.thumbnail-image');
+                const video = card.querySelector('.product-video');
+
+                if (thumbnail) thumbnail.classList.add('hidden');
+                if (video) video.classList.add('visible');
+            }
+
             // Function to handle play/pause toggle
-            function togglePlayPause(video, playButton, pauseButton) {
+            function togglePlayPause(video, playButton, pauseButton, card) {
                 // If we're scrolling, don't toggle play/pause
                 if (isScrolling) return;
 
@@ -346,23 +417,16 @@
                 }
 
                 if (video.paused) {
-                    // Pause any currently playing video
+                    // Pause any currently playing video and show its thumbnail
                     if (currentlyPlaying && currentlyPlaying !== video) {
-                        currentlyPlaying.pause();
                         const currentCard = currentlyPlaying.closest('.product-card');
                         if (currentCard) {
-                            const currentPlayBtn = currentCard.querySelector('.play-button');
-                            const currentPauseBtn = currentCard.querySelector('.pause-button');
-                            if (currentPlayBtn) {
-                                currentPlayBtn.style.display = 'flex';
-                                currentPlayBtn.classList.remove('fade-out');
-                            }
-                            if (currentPauseBtn) {
-                                currentPauseBtn.style.display = 'none';
-                                currentPauseBtn.classList.remove('fade-out');
-                            }
+                            showThumbnail(currentCard);
                         }
                     }
+                    
+                    // Hide thumbnail and show video
+                    showVideo(card);
                     
                     // Play this video
                     video.play().catch(error => console.log("Autoplay prevented:", error));
@@ -378,18 +442,14 @@
                         pauseButton.classList.add('fade-out');
                     }, 1500);
                 } else {
-                    // Pause the video
+                    // Pause the video and show thumbnail
                     video.pause();
                     currentlyPlaying = null;
-                    
-                    // Show play button, hide pause button
-                    pauseButton.style.display = 'none';
-                    playButton.style.display = 'flex';
-                    playButton.classList.remove('fade-out');
+                    showThumbnail(card);
                 }
             }
 
-            videoUrls.forEach((videoUrl, index) => {
+            videoData.forEach((data, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.setAttribute('data-index', index);
@@ -397,6 +457,18 @@
                 // Video container
                 const videoContainer = document.createElement('div');
                 videoContainer.className = 'video-container';
+
+                // Thumbnail image
+                const thumbnail = document.createElement('img');
+                thumbnail.className = 'thumbnail-image';
+                thumbnail.src = data.thumbnailUrl;
+                thumbnail.alt = `Video thumbnail ${index + 1}`;
+                thumbnail.loading = 'lazy';
+
+                // Handle thumbnail load error (fallback to placeholder)
+                thumbnail.onerror = function() {
+                    this.src = `/placeholder.svg?height=400&width=225&text=Video+${index + 1}`;
+                };
 
                 // Video element
                 const video = document.createElement('video');
@@ -410,13 +482,14 @@
                 video.setAttribute('webkit-playsinline', '');
 
                 const source = document.createElement('source');
-                source.src = videoUrl;
+                source.src = data.videoUrl;
                 source.type = 'video/mp4';
 
                 video.appendChild(source);
                 video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
                 videoElements.push(video);
 
+                videoContainer.appendChild(thumbnail);
                 videoContainer.appendChild(video);
                 card.appendChild(videoContainer);
 
@@ -435,30 +508,28 @@
                 // Add event listeners for play/pause functionality
                 playButton.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    togglePlayPause(video, playButton, pauseButton);
+                    togglePlayPause(video, playButton, pauseButton, card);
                 });
 
                 pauseButton.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    togglePlayPause(video, playButton, pauseButton);
+                    togglePlayPause(video, playButton, pauseButton, card);
                 });
 
                 // Add click event to the entire card
                 card.addEventListener('click', () => {
                     if (!isScrolling) {
-                        togglePlayPause(video, playButton, pauseButton);
+                        togglePlayPause(video, playButton, pauseButton, card);
                     }
                 });
 
-                // Show play button when video ends
+                // Show thumbnail when video ends
                 video.addEventListener('ended', () => {
                     if (fadeOutTimer) {
                         clearTimeout(fadeOutTimer);
                         fadeOutTimer = null;
                     }
-                    pauseButton.style.display = 'none';
-                    playButton.style.display = 'flex';
-                    playButton.classList.remove('fade-out');
+                    showThumbnail(card);
                     currentlyPlaying = null;
                 });
 
@@ -470,7 +541,7 @@
                 // Ensure index is within bounds
                 if (index < 0) index = 0;
                 const maxVisibleCards = getMaxVisibleCards();
-                const maxIndex = videoUrls.length - maxVisibleCards;
+                const maxIndex = videoData.length - maxVisibleCards;
                 
                 if (index > maxIndex) index = maxIndex;
                 
@@ -553,7 +624,7 @@
                 
                 // Show/hide right button based on scroll position
                 const maxVisibleCards = getMaxVisibleCards();
-                const maxIndex = videoUrls.length - maxVisibleCards;
+                const maxIndex = videoData.length - maxVisibleCards;
                 scrollRightBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
                 scrollRightBtn.style.pointerEvents = currentIndex >= maxIndex ? 'none' : 'auto';
             }
